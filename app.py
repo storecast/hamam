@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
-from sessions.models import db
-from sessions.session_stores import DbSessionStore
+from session.models import db
+from session.session_stores import DbSessionStore
 
 
 app = Flask(__name__)

@@ -6,7 +6,7 @@ import re
 import tempfile
 import unittest
 from app import app
-from sessions.models import db, DjangoSession
+from session.models import db, DjangoSession
 
 
 class SessionViewTestCase(unittest.TestCase):
