@@ -5,8 +5,8 @@ import os
 import re
 import tempfile
 import unittest
-from app import app
-from session.models import db, DjangoSession
+from ..app import app
+from .models import db, DjangoSession
 
 
 class SessionViewTestCase(unittest.TestCase):
@@ -76,5 +76,7 @@ class SessionViewTestCase(unittest.TestCase):
         return re.sub(r'\s+', '', line)
 
 
-if __name__ == '__main__':
-    unittest.main()
+def suite():
+    suite = unittest.TestSuite()
+    suite.addTest(unittest.makeSuite(SessionViewTestCase))
+    return suite
