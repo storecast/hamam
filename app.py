@@ -10,8 +10,8 @@ app.config.from_envvar('HAMAM_SETTINGS', silent=True)
 db.init_app(app)
 
 
-@app.route('/')
-def index():
+@app.route('/session/')
+def session():
     cookie_name = app.config['SESSION_COOKIE_NAME']
     session_id = request.cookies.get(cookie_name)
     if not session_id:
