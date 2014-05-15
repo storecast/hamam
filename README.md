@@ -6,7 +6,7 @@ It shares the user sessions with the django `txtr_skins` app.
 
 ## Configuration (development)
 
-Copy `configs/dev.py.sample` into `configs/dev.py` and add the connection
+Copy `hamam/configs/dev.py.sample` into `hamam/configs/dev.py` and add the connection
 string to the db, that is used by your django app:
 ```
 SQLALCHEMY_DATABASE_URI = 'mysql://user:pass@localhost/txtr_skins'
@@ -16,11 +16,11 @@ SQLALCHEMY_DATABASE_URI = 'mysql://user:pass@localhost/txtr_skins'
 
 Make sure to install all the dependencies:
 ```
-pip install -r requirements/dev.txt
+pip install -r hamam/requirements/dev.txt
 ```
 To run the app:
 ```
-cd hamam && python app.py
+cd hamam && python hamam/app.py
 ```
 
 ## Deployment
