@@ -1,6 +1,7 @@
 import base64
 from .serializers import JSONSerializer
 from .models import DjangoSession
+from functools import partial
 
 
 class BaseSessionStore(object):
@@ -37,7 +38,7 @@ class BaseSessionStore(object):
         # we can happily use builtin `bytes` here
         encoded_data = base64.b64decode(bytes(session_data))
         try:
-            # Could produce ValueError if there is no ':'
+            # could produce ValueError if there is no ':'
             hash, serialized = encoded_data.split(b':', 1)
             return self.serializer().loads(serialized)
         except Exception:
@@ -53,3 +54,5 @@ class DbSessionStore(BaseSessionStore):
         session = DjangoSession.query.get(key)
         if session:
             return session.session_data
+
+DbSessionStore = partial(DbSessionStore, None)
