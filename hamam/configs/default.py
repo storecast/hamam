@@ -5,8 +5,8 @@ DEBUG = True
 SESSION_COOKIE_NAME = 'sessionid'
 SESSION_STORAGE = 'hamam.session.session_stores.DbSessionStore'
 
-# absolute path to unzipped documents location
-WRITABLE_ROOT = '/private/tmp/'
+# path prefix to serve the documents from
+DOCUMENT_PATH_PREFIX = '/delivery'
 
 REAKTOR_CONFIG = {
     'host': 'skins-staging-reaktor',

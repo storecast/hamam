@@ -15,7 +15,9 @@ def document_view(doc_id):
     token = session['reaktor_token']
     try:
         document = Document.get_by_id(token, doc_id)
-        path = Document.get_doc_path(token, doc_id, document.is_user)
+        path = request.script_root + \
+            current_app.config['DOCUMENT_PATH_PREFIX'] + \
+            Document.get_doc_path(token, doc_id, document.is_user)
     except ReaktorAuthError: return jsonify(), 403
     except ReaktorArgumentError: return jsonify(), 404
     return jsonify(extracted_epub_path=path)
