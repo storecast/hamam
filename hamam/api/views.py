@@ -1,6 +1,7 @@
-from flask import request, Blueprint, current_app, jsonify
+from flask import request, Blueprint, current_app, jsonify, send_from_directory
 from barrel_reaktor.document.models import Document
 from holon import ReaktorAuthError, ReaktorArgumentError
+from ..configs.default import DOCUMENT_PATH_PREFIX
 from ..session import SessionStore
 
 
@@ -16,8 +17,14 @@ def document_view(doc_id):
     try:
         document = Document.get_by_id(token, doc_id)
         path = request.script_root + \
-            current_app.config['DOCUMENT_PATH_PREFIX'] + \
+            '/api' + \
+            DOCUMENT_PATH_PREFIX + \
             Document.get_doc_path(token, doc_id, document.is_user)
     except ReaktorAuthError: return jsonify(), 403
     except ReaktorArgumentError: return jsonify(), 404
     return jsonify(extracted_epub_path=path)
+
+
+@mod.route(DOCUMENT_PATH_PREFIX + '/<path:path>')
+def serve_document_asset(path):
+    return send_from_directory('/', path)
