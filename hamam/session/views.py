@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify, current_app
-from session_stores import DbSessionStore
+from . import SessionStore
 
 
 mod = Blueprint('session', __name__)
@@ -11,6 +11,5 @@ def session():
     session_id = request.cookies.get(cookie_name)
     if not session_id:
         return jsonify()
-    session_store = DbSessionStore(session_id)
-    session = session_store.load()
+    session = SessionStore(session_id).load()
     return jsonify(session)

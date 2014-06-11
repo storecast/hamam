@@ -1,7 +1,10 @@
 """Here go the default config vars for staging, development and production."""
 
 DEBUG = True
+
 SESSION_COOKIE_NAME = 'sessionid'
+SESSION_STORAGE = 'session.session_stores.DbSessionStore'
+
 # absolute path to unzipped documents location
 WRITABLE_ROOT = '/private/tmp/'
 
