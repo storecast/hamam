@@ -48,3 +48,11 @@ If you want your module to be testable via `run_tests.py` script:
 1. create your test cases and place them under `tests.py` file inside your module dir;
 2. `tests.py` should have a `suite` function, that returns a test suite, based on your test cases. You can check an example in `session/tests.py`;
 3. add your module name to `MODULE` variable in `run_tests.py`.
+
+## License
+
+BSD, see `LICENSE` for more details.
+
+## Authors and contributors
+
+txtr [Web team](mailto:web-dev@txtr.com).
