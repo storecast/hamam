@@ -3,7 +3,7 @@
 DEBUG = True
 
 SESSION_COOKIE_NAME = 'sessionid'
-SESSION_STORAGE = 'session.session_stores.DbSessionStore'
+SESSION_STORAGE = 'hamam.session.session_stores.DbSessionStore'
 
 # absolute path to unzipped documents location
 WRITABLE_ROOT = '/private/tmp/'
