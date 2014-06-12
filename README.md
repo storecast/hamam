@@ -16,11 +16,11 @@ SQLALCHEMY_DATABASE_URI = 'mysql://user:pass@localhost/txtr_skins'
 
 Make sure to install all the dependencies:
 ```
-pip install -r hamam/requirements/dev.txt
+pip install -r requirements/dev.txt
 ```
 To run the app:
 ```
-cd hamam && python hamam/app.py
+python run_app.py
 ```
 
 ## Deployment
