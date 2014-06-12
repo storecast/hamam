@@ -5,8 +5,7 @@ from api.views import mod as api_blueprint
 
 
 app = Flask(__name__)
-# relative imports are not supported
-app.config.from_object('hamam.configs.default')
+app.config.from_object('configs.default')
 app.config.from_envvar('HAMAM_SETTINGS', silent=True)
 
 db.init_app(app)
