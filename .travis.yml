@@ -1,0 +1,16 @@
+language: python
+python:
+  - "2.7"
+install:
+  # dependencies
+  - pip install -r requirements/common.txt --process-dependency-links
+script:
+  # all the tests
+  - python run_tests.py
+notifications:
+  # send the notification about the build results
+  email:
+    recipients:
+      - web-dev@txtr.com
+    on_success: change
+    on_failure: change
