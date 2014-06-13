@@ -1,28 +1,36 @@
-import base64
-from datetime import datetime
-import json
 import os
 import re
 import tempfile
 import unittest
 from ..app import app
-from .models import db, DjangoSession
+from .views import SessionStore
 
 
 class SessionViewTestCase(unittest.TestCase):
 
-    session_id = 'some id'
-    session_data = json.dumps({'foo': 'bar'})
+    session_key = 'some id'
+    session_data = {'foo': 'bar'}
 
     def setUp(self):
         self.db_fd, app.config['DATABASE'] = tempfile.mkstemp()
         app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///%s' % app.config['DATABASE']
         app.config['TESTING'] = True
         self.client = app.test_client()
+        # `SessionStore` is a partial object
+        self.store = SessionStore
         with app.app_context():
+            db = self.store.args[0]
             db.create_all()
 
     def tearDown(self):
+        with app.app_context():
+            # the session keeps some objects that were used during the test run
+            # even if the db changes, the session connection stays the same
+            # here we make sure that the session will be recreated
+            # using `self.store` here to ensure that we refresh the exact session
+            # that is used for `SessionStore`
+            session = self.store.args[0].session
+            session.remove()
         os.close(self.db_fd)
         os.unlink(app.config['DATABASE'])
 
@@ -44,26 +52,23 @@ class SessionViewTestCase(unittest.TestCase):
         """Shared session view returns correct session data."""
         self.create_session()
         with self.client as c:
-            c.set_cookie('*', app.config['SESSION_COOKIE_NAME'], self.session_id)
+            c.set_cookie('*', app.config['SESSION_COOKIE_NAME'], self.session_key)
             rv = c.get('/session/')
-            self.assertEqual(self.strip_line(self.session_data), self.strip_line(rv.data))
+            self.assertEqual(self.session_data, self.store('').serializer().loads(rv.data))
 
     def test_session_id_not_in_db(self):
         """Shared session view returns empty response
         if the session not in the db.
         """
         with self.client as c:
-            c.set_cookie('*', app.config['SESSION_COOKIE_NAME'], self.session_id)
+            c.set_cookie('*', app.config['SESSION_COOKIE_NAME'], self.session_key)
             rv = c.get('/session/')
             self.assertEqual('{}', rv.data)
 
     def create_session(self):
         """Helper that puts the session in the database."""
-        # make session look django-ish
-        session = DjangoSession(self.session_id, base64.b64encode(bytes('hash:%s' % self.session_data)), datetime.now())
         with app.app_context():
-            db.session.add(session)
-            db.session.commit()
+            self.store(self.session_key).put(self.session_data)
 
     def strip_line(self, line):
         """Helper that strips all the whitespaces from the given string.
