@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/txtr/hamam.svg?branch=master)](https://travis-ci.org/txtr/hamam)
+
 # [txtr](http://txtr.com/) API for web reading
 
 This is the python wrapper for the [reaktor](http://txtr.com/reaktor/) rpc API.
