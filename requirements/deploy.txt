@@ -1,2 +1,2 @@
 -r common.txt
-cx-Oracle==5.1.2
+cx-Oracle==5.1.3
