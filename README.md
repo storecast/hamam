@@ -51,6 +51,52 @@ If you want your module to be testable via `run_tests.py` script:
 2. `tests.py` should have a `suite` function, that returns a test suite, based on your test cases. You can check an example in `session/tests.py`;
 3. add your module name to `MODULE` variable in `run_tests.py`.
 
+
+## Example setup with nginx and uwsgi
+
+Here are 2 minimal configuration files to run the app on the path `/read/` using uwsgi (in http mode) and nginx.
+
+First, the app need to run on its own using some ini file config for uwsgi:
+```
+[uwsgi]
+chdir = /some/path/hamam/
+home = /some/user/.virtualenvs/hamam/
+master = True
+processes = 1
+pidfile = /some/path/hamam.pid
+http = 127.0.0.1:8001
+vacuum = True
+env = HAMAM_SETTINGS=/some/path/hamam/hamam/configs.py
+mount = /read=run_app.py
+manage-script-name = True
+```
+The app is now available on port 8001, on both [http://127.0.0.1:8001/session/](http://127.0.0.1:8001/session/)
+and [http://127.0.0.1:8001/read/session/](http://127.0.0.1:8001/read/session/).
+
+Then, nginx just need to know about that path and on which port to forward traffic:
+```
+...
+
+http {
+	...
+
+    server {
+        listen 80;
+
+        location / {
+            proxy_pass http://127.0.0.1:8000;
+            proxy_set_header Host $host;
+        }
+
+        location /read/ {
+            proxy_pass http://127.0.0.1:8001;
+            proxy_set_header Host $host;
+        }
+    }
+}
+```
+The app is now proxied from port 80: [http://127.0.0.1/read/session/](http://127.0.0.1/read/session/).
+Any path different from `/read/` will be proxied to port 8000 and hits whatever is running there (e.g. a django app).
 ## License
 
 BSD, see `LICENSE` for more details.
