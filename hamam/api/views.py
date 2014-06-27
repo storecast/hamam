@@ -22,7 +22,11 @@ def document_view(doc_id):
             Document.get_doc_path(token, doc_id, document.is_user)
     except ReaktorAuthError: return jsonify(), 403
     except ReaktorArgumentError: return jsonify(), 404
-    return jsonify(extracted_epub_path=path)
+    return jsonify(extracted_epub_path=path), 200, {
+        # Allow loading contents from https to http and vice versa.
+        'Access-Control-Allow-Origin': ' '.join(
+            [p + request.host for p in ['http://', 'https://']])
+    }
 
 
 @mod.route(DOCUMENT_PATH_PREFIX + '/<path:path>')
