@@ -1,4 +1,5 @@
 from os import path
+import logging
 import sys
 
 
@@ -10,7 +11,10 @@ def get_app():
     return app
 
 
+logging.basicConfig(level=logging.INFO)
+
 application = get_app()
+
 
 if __name__ == '__main__':
     application.run()
