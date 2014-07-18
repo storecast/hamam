@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/txtr/hamam.svg?branch=master)](https://travis-ci.org/txtr/hamam)
+[![Coverage Status](https://coveralls.io/repos/txtr/hamam/badge.png?branch=master)](https://coveralls.io/r/txtr/hamam?branch=master)
 
 # [txtr](http://txtr.com/) API for web reading
 
