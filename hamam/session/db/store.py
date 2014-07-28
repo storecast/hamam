@@ -15,3 +15,6 @@ class DbSessionStore(BaseSessionStore):
         session = DjangoSession(key, session_data, datetime.now())
         self.backend.session.add(session)
         self.backend.session.commit()
+
+    def close(self):
+        self.backend.session.close()
