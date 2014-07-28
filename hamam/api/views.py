@@ -12,7 +12,7 @@ mod = Blueprint('api', __name__)
 def document_view(doc_id):
     cookie_name = current_app.config['SESSION_COOKIE_NAME']
     session_id = request.cookies.get(cookie_name)
-    session = SessionStore(session_id).load()
+    session = SessionStore.load(session_id)
     token = session['reaktor_token']
     try:
         document = Document.get_by_id(token, doc_id)

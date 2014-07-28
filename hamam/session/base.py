@@ -14,26 +14,25 @@ class BaseSessionStore(object):
     # not a realy hash here
     _hash = 'hash'
 
-    def __init__(self, backend, key, serializer=None):
+    def __init__(self, backend, serializer=None):
         self.backend = backend
-        self.key = key
-        self.serializer = serializer or JSONSerializer
+        self.serializer = (serializer or JSONSerializer)()
 
-    def load(self):
-        session_data = self._get(self.key)
+    def load(self, key):
+        session_data = self._get(key)
 
         if session_data is not None:
             return self._decode(session_data)
         else:
             return {}
 
-    def put(self, session_data):
+    def put(self, key, session_data):
         if not current_app.config.get('TESTING'):
             raise NotImplementedError("This method is for testing purposes only")
         if session_data is None:
             raise ValueError("Session data cannot be None")
         encoded_data = self._encode(session_data)
-        self._set(self.key, encoded_data)
+        self._set(key, encoded_data)
 
     def _get(self, key):
         raise NotImplementedError
@@ -49,7 +48,7 @@ class BaseSessionStore(object):
         :return: encoded data
         :rtype: str
         """
-        session_data = self.serializer().dumps(session_data)
+        session_data = self.serializer.dumps(session_data)
         return base64.b64encode(bytes('%s:%s' % (self._hash, session_data)))
 
     def _decode(self, session_data):
@@ -66,7 +65,7 @@ class BaseSessionStore(object):
         try:
             # could produce ValueError if there is no ':'
             hash, serialized = decoded_data.split(b':', 1)
-            return self.serializer().loads(serialized)
+            return self.serializer.loads(serialized)
         except Exception:
             # ValueError, SuspiciousOperation, unpickling exceptions. If any of
             # these happen, return an empty dictionary (i.e., empty session).

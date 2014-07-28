@@ -1,9 +1,9 @@
+from . import SessionStore
+from ..app import app
 import os
 import re
 import tempfile
 import unittest
-from ..app import app
-from .views import SessionStore
 
 
 class SessionViewTestCase(unittest.TestCase):
@@ -16,11 +16,9 @@ class SessionViewTestCase(unittest.TestCase):
         app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///%s' % app.config['DATABASE']
         app.config['TESTING'] = True
         self.client = app.test_client()
-        # `SessionStore` is a partial object
         self.store = SessionStore
         with app.app_context():
-            db = self.store.args[0]
-            db.create_all()
+            self.store.backend.create_all()
 
     def tearDown(self):
         with app.app_context():
@@ -29,7 +27,7 @@ class SessionViewTestCase(unittest.TestCase):
             # here we make sure that the session will be recreated
             # using `self.store` here to ensure that we refresh the exact session
             # that is used for `SessionStore`
-            session = self.store.args[0].session
+            session = self.store.backend.session
             session.remove()
         os.close(self.db_fd)
         os.unlink(app.config['DATABASE'])
@@ -54,7 +52,7 @@ class SessionViewTestCase(unittest.TestCase):
         with self.client as c:
             c.set_cookie('*', app.config['SESSION_COOKIE_NAME'], self.session_key)
             rv = c.get('/session/')
-            self.assertEqual(self.session_data, self.store('').serializer().loads(rv.data))
+            self.assertEqual(self.session_data, self.store.serializer.loads(rv.data))
 
     def test_session_id_not_in_db(self):
         """Shared session view returns empty response
@@ -68,7 +66,7 @@ class SessionViewTestCase(unittest.TestCase):
     def create_session(self):
         """Helper that puts the session in the database."""
         with app.app_context():
-            self.store(self.session_key).put(self.session_data)
+            self.store.put(self.session_key, self.session_data)
 
     def strip_line(self, line):
         """Helper that strips all the whitespaces from the given string.
