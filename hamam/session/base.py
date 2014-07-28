@@ -1,9 +1,6 @@
-import base64
-from datetime import datetime
-from flask import current_app
 from .serializers import JSONSerializer
-from .models import DjangoSession, db
-from functools import partial
+from flask import current_app
+import base64
 
 
 class BaseSessionStore(object):
@@ -74,19 +71,3 @@ class BaseSessionStore(object):
             # ValueError, SuspiciousOperation, unpickling exceptions. If any of
             # these happen, return an empty dictionary (i.e., empty session).
             return {}
-
-
-class DbSessionStore(BaseSessionStore):
-    """Database session storage."""
-
-    def _get(self, key):
-        session = self.backend.session.query(DjangoSession).get(key)
-        if session:
-            return session.session_data
-
-    def _set(self, key, session_data):
-        session = DjangoSession(key, session_data, datetime.now())
-        self.backend.session.add(session)
-        self.backend.session.commit()
-
-DbSessionStore = partial(DbSessionStore, db)

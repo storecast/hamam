@@ -1,5 +1,5 @@
 from flask import Flask
-from session.models import db
+from session.db.models import db
 from session.views import mod as session_blueprint
 from api.views import mod as api_blueprint
 

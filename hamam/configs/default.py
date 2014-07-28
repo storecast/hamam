@@ -3,7 +3,7 @@
 DEBUG = True
 
 SESSION_COOKIE_NAME = 'sessionid'
-SESSION_STORAGE = 'session.session_stores.DbSessionStore'
+SESSION_STORAGE = 'session.db.DbSessionStore'
 
 # path prefix to serve the documents from
 DOCUMENT_PATH_PREFIX = '/delivery'
