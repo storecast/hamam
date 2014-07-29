@@ -9,7 +9,7 @@ SESSION_STORAGE = 'session.db.DbSessionStore'
 DOCUMENT_PATH_PREFIX = '/delivery'
 
 REAKTOR_CONFIG = {
-    'host': 'skins-staging-reaktor',
+    'host': 'skins-staging-reaktor.intern.txtr.com',
     'port': 8080,
     'path': '/api/1.50.32/rpc',
     'ssl': False,
