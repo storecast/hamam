@@ -1,10 +1,10 @@
-from . import SessionStore
+from . import get_session_store
 from ..app import app
+from mock import MagicMock
 import os
 import re
 import tempfile
 import unittest
-from mock import MagicMock
 
 
 class SessionViewTestCase(unittest.TestCase):
@@ -17,8 +17,8 @@ class SessionViewTestCase(unittest.TestCase):
         app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///%s' % app.config['DATABASE']
         app.config['TESTING'] = True
         self.client = app.test_client()
-        self.store = SessionStore
         with app.app_context():
+            self.store = get_session_store()
             self.store.backend.create_all()
 
     def tearDown(self):
