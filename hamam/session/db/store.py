@@ -1,5 +1,5 @@
 from ..base import BaseSessionStore
-from .models import DjangoSession
+from .models import db, DjangoSession
 from datetime import datetime
 
 
@@ -18,3 +18,5 @@ class DbSessionStore(BaseSessionStore):
 
     def close(self):
         self.backend.session.close()
+
+SessionStore = DbSessionStore(db)
