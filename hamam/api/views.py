@@ -3,17 +3,27 @@ from barrel_reaktor.document.models import Document
 from holon import ReaktorAuthError, ReaktorArgumentError
 from ..configs.default import DOCUMENT_PATH_PREFIX
 from ..session import SessionStore
+import logging
 
 
 mod = Blueprint('api', __name__)
+logger = logging.getLogger(__name__)
 
 
 @mod.route('/document/<doc_id>/')
 def document_view(doc_id):
     cookie_name = current_app.config['SESSION_COOKIE_NAME']
-    session_id = request.cookies.get(cookie_name)
+    try:
+        session_id = request.cookies[cookie_name]
+    except KeyError:
+        logger.warn("No cookies for %s" % cookie_name)
+        return jsonify(), 403
     session = SessionStore.load(session_id)
-    token = session['reaktor_token']
+    try:
+        token = session['reaktor_token']
+    except KeyError:
+        logger.warn("No reaktor_token in %s" % repr(session))
+        return jsonify(), 403
     try:
         document = Document.get_by_id(token, doc_id)
         path = request.script_root + \
