@@ -28,8 +28,7 @@ class SessionViewTestCase(unittest.TestCase):
             # here we make sure that the session will be recreated
             # using `self.store` here to ensure that we refresh the exact session
             # that is used for `SessionStore`
-            session = self.store.backend.session
-            session.remove()
+            self.store.backend.session.remove()
         os.close(self.db_fd)
         os.unlink(app.config['DATABASE'])
 
@@ -80,30 +79,14 @@ class SessionViewTestCase(unittest.TestCase):
         return re.sub(r'\s+', '', line)
 
 
-class StoreTestCase(unittest.TestCase):
+class StoreTestCase(SessionViewTestCase):
 
     store_close = MagicMock()
 
     def setUp(self):
-        self.db_fd, app.config['DATABASE'] = tempfile.mkstemp()
-        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///%s' % app.config['DATABASE']
-        app.config['TESTING'] = True
-        self.client = app.test_client()
-        self.store = SessionStore
+        super(StoreTestCase, self).setUp()
         with app.app_context():
             self.store.close = self.store_close
-
-    def tearDown(self):
-        with app.app_context():
-            # the session keeps some objects that were used during the test run
-            # even if the db changes, the session connection stays the same
-            # here we make sure that the session will be recreated
-            # using `self.store` here to ensure that we refresh the exact session
-            # that is used for `SessionStore`
-            session = self.store.backend.session
-            session.remove()
-        os.close(self.db_fd)
-        os.unlink(app.config['DATABASE'])
 
     def test_session_store_closeable(self):
         """At the end of the request, if the session store is closeable (e.g. DB),
