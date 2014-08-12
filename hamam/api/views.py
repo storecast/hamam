@@ -18,7 +18,7 @@ def document_view(doc_id):
     except KeyError:
         logger.warn("No cookies for %s" % cookie_name)
         return jsonify(), 403
-    session = SessionStore.load(session_id)
+    session = SessionStore(session_id).load()
     try:
         token = session['reaktor_token']
     except KeyError:

@@ -11,5 +11,5 @@ def session():
     session_id = request.cookies.get(cookie_name)
     if not session_id:
         return jsonify()
-    session = SessionStore.load(session_id)
+    session = SessionStore(session_id).load()
     return jsonify(session)

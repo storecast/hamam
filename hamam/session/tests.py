@@ -19,7 +19,10 @@ class SessionViewTestCase(unittest.TestCase):
         self.client = app.test_client()
         with app.app_context():
             self.store = get_session_store()
-            self.store.backend.create_all()
+            # self.store = get_session_store()
+            # self.store.backend.create_all()
+            db = self.store.args[0]
+            db.create_all()
 
     def tearDown(self):
         with app.app_context():
@@ -28,7 +31,9 @@ class SessionViewTestCase(unittest.TestCase):
             # here we make sure that the session will be recreated
             # using `self.store` here to ensure that we refresh the exact session
             # that is used for `SessionStore`
-            self.store.backend.session.remove()
+            session = self.store.args[0].session
+            session.remove()
+            # self.store.backend.session.remove()
         os.close(self.db_fd)
         os.unlink(app.config['DATABASE'])
 
@@ -52,7 +57,7 @@ class SessionViewTestCase(unittest.TestCase):
         with self.client as c:
             c.set_cookie('*', app.config['SESSION_COOKIE_NAME'], self.session_key)
             rv = c.get('/session/')
-            self.assertEqual(self.session_data, self.store.serializer.loads(rv.data))
+            self.assertEqual(self.session_data, self.store('').serializer().loads(rv.data))
 
     def test_session_id_not_in_db(self):
         """Shared session view returns empty response
@@ -66,7 +71,7 @@ class SessionViewTestCase(unittest.TestCase):
     def create_session(self):
         """Helper that puts the session in the database."""
         with app.app_context():
-            self.store.put(self.session_key, self.session_data)
+            self.store(self.session_key).put(self.session_data)
 
     def strip_line(self, line):
         """Helper that strips all the whitespaces from the given string.
@@ -79,26 +84,7 @@ class SessionViewTestCase(unittest.TestCase):
         return re.sub(r'\s+', '', line)
 
 
-class StoreTestCase(SessionViewTestCase):
-
-    store_close = MagicMock()
-
-    def setUp(self):
-        super(StoreTestCase, self).setUp()
-        with app.app_context():
-            self.store.close = self.store_close
-
-    def test_session_store_closeable(self):
-        """At the end of the request, if the session store is closeable (e.g. DB),
-        the close method should be called.
-        """
-        with self.client as c:
-            c.get('/session/')
-            self.assertTrue(self.store_close.called)
-
-
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(SessionViewTestCase))
-    suite.addTest(unittest.makeSuite(StoreTestCase))
     return suite

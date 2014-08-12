@@ -1,4 +1,4 @@
-from flask import Flask, g
+from flask import Flask
 from session.db.models import db
 from session.views import mod as session_blueprint
 from api.views import mod as api_blueprint
@@ -14,10 +14,9 @@ app.register_blueprint(api_blueprint, url_prefix='/api')
 
 
 @app.teardown_appcontext
-def close_store(error):
-    """Closes the database again at the end of the request."""
-    if hasattr(g, '_session_store') and hasattr(g._session_store, 'close'):
-        g._session_store.close()
+def close_db_session(error):
+    """Closes the database at the end of the request."""
+    db.session.close()
 
 
 if __name__ == '__main__':
