@@ -7,6 +7,7 @@ SESSION_STORAGE = 'session.db.store.SessionStore'
 
 # path prefix to serve the documents from
 DOCUMENT_PATH_PREFIX = '/delivery'
+DOCUMENT_ROOT = '/usr/local/server/txtr-data/epub-cache/'
 
 REAKTOR_CONFIG = {
     'host': 'skins-staging-reaktor.intern.txtr.com',
