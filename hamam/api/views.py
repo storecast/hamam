@@ -43,4 +43,7 @@ def document_view(doc_id):
 
 @mod.route(DOCUMENT_PATH_PREFIX + '/<path:path>')
 def serve_document_asset(path):
-    return send_from_directory(DOCUMENT_ROOT, path)
+    f = send_from_directory(DOCUMENT_ROOT, path)
+    if path.endswith('.html'):
+        f.mimetype = 'application/xhtml+xml'
+    return f
